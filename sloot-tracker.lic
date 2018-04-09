@@ -1048,8 +1048,8 @@ grab_loot = proc { |loot, from|
         next
     end
 
-    unless get_item.call(loot, from)
-        #msg.call("failed to get item \"#{loot.name}\" from \"#{sack.name}\"")
+    unless get_item.call(loot, nil)
+        msg.call("failed to get item \"#{loot.name}\" from \"#{sack.name}\"")
     else
         if disk and put_item.call(loot,disk)
             next
@@ -1125,19 +1125,6 @@ loot_it = proc { |array, exclude, fromCreature|
 	
     array.each { |loot|
 	
-	
-		#[CSV Code From]-GSIV:Ryaden
-		
-		require 'csv'
-
-		experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location, loot.id.to_s, loot.name,"","","","","",critterList.to_s]]
-
-		CSV.open("experiment.csv", "a+") do |csv|
-			experimentarray.each do |obj|
-				csv << obj
-			end
-		end	
-	
         next if loot.name =~ /severed.*(?:arm|leg)/
 
         # Skip over any loot that is in the exclude array
@@ -1154,9 +1141,22 @@ loot_it = proc { |array, exclude, fromCreature|
 			#grab_loot.call(loot, nil)
 			grab_loot.call(loot, dropSource)
 			
+			#[CSV Code From]-GSIV:Ryaden
+			
+			require 'csv'
+
+			experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location, loot.id.to_s, loot.name,loot.type.to_s,"","","","","",critterList.to_s]]
+
+			CSV.open("experiment.csv", "a+") do |csv|
+				experimentarray.each do |obj|
+					csv << obj
+				end
+			end					
+			
         elsif loot.name == 'some silver coins'
             dothistimeout "get ##{loot.id}", 5, /^You gather the remaining \d+ coins from inside your .*\.$|^You gather the remaining/
-        end
+        end	
+		
     }
 }
 
@@ -2196,7 +2196,7 @@ npcs.each { |npc|
 
 		require 'csv'
 
-		experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location,npc.id.to_s,"",npc.name,critterLevel.to_s,1]]
+		experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location,npc.id.to_s,"","",npc.name,critterLevel.to_s,1]]
 
 		CSV.open("experiment.csv", "a+") do |csv|
 		experimentarray.each do |obj|
@@ -2220,7 +2220,7 @@ npcs.each { |npc|
 
 				require 'csv'
 
-				experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location,npc.id.to_s,"",npc.name,critterLevel.to_s,monster[:count].to_s]]
+				experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location,npc.id.to_s,"","",npc.name,critterLevel.to_s,monster[:count].to_s]]
 
 				CSV.open("experiment.csv", "a+") do |csv|
 				experimentarray.each do |obj|
@@ -2242,7 +2242,7 @@ npcs.each { |npc|
 
 			require 'csv'
 
-			experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location,npc.id.to_s,"",npc.name,critterLevel.to_s,1]]
+			experimentarray = [[Char.name, Char.level.to_s, Time.now.to_s, Room.current.id.to_s, Room.current.location,npc.id.to_s,"","",npc.name,critterLevel.to_s,1]]
 
 			CSV.open("experiment.csv", "a+") do |csv|
 			experimentarray.each do |obj|
@@ -2310,7 +2310,7 @@ end
 
 #echo "loot_it 6"
 #echo "target: " + target.to_s
-loot_it.call(target,previous_loot_ids,critterList)
+loot_it.call(target,previous_loot_ids,critterList.to_s)
 gather_ammo.call()
 
 get_stored.call()
